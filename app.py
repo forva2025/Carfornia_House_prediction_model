@@ -73,24 +73,78 @@ def train_model():
     data = load_data()
     x = data.drop(columns=TARGET)
     y = data[TARGET]
+    features = list(x.columns)
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.4, random_state=42
     )
-    model = LinearRegression()
-    model.fit(x_train, y_train)
+
+    model = None
+    model_source = "trained for this deployment"
+    if MODEL_PATH.exists():
+        try:
+            artifact = joblib.load(MODEL_PATH)
+            if isinstance(artifact, dict):
+                candidate = artifact.get("model")
+                saved_features = artifact.get("features")
+                if saved_features is not None and list(saved_features) != features:
+                    raise ValueError("The saved model uses a different feature order.")
+            else:
+                # Support the estimator-only file produced by house_prices.py.
+                candidate = artifact
+
+            if not hasattr(candidate, "predict"):
+                raise TypeError("The saved artifact does not contain a model.")
+            if getattr(candidate, "n_features_in_", len(features)) != len(features):
+                raise ValueError("The saved model expects a different number of features.")
+
+            model = candidate
+            model_source = "loaded from the saved joblib artifact"
+        except Exception:
+            # A model serialized by another scikit-learn version may not load.
+            # Retraining keeps the deployed app usable in that situation.
+            model = None
+
+    if model is None:
+        model = LinearRegression()
+        model.fit(x_train, y_train)
+        try:
+            joblib.dump({"model": model, "features": features}, MODEL_PATH)
+        except OSError:
+            # Some deployment filesystems are read-only; the in-memory model is enough.
+            pass
+
     predictions = model.predict(x_test)
     metrics = {
         "mse": mean_squared_error(y_test, predictions),
         "rmse": np.sqrt(mean_squared_error(y_test, predictions)),
         "r2": r2_score(y_test, predictions),
     }
-    joblib.dump({"model": model, "features": list(x.columns)}, MODEL_PATH)
-    return model, x, x_train, x_test, y_train, y_test, predictions, metrics
+    return (
+        model,
+        x,
+        x_train,
+        x_test,
+        y_train,
+        y_test,
+        predictions,
+        metrics,
+        model_source,
+    )
 
 
 try:
     data = load_data()
-    model, x, x_train, x_test, y_train, y_test, y_pred, metrics = train_model()
+    (
+        model,
+        x,
+        x_train,
+        x_test,
+        y_train,
+        y_test,
+        y_pred,
+        metrics,
+        model_source,
+    ) = train_model()
 except Exception as exc:
     st.error(
         "The dataset could not be loaded. On first launch, the app needs internet access "
@@ -130,3 +184,97 @@ with st.sidebar:
             value=default,
             step=step,
         )
+
+    calculate = st.button(
+        "Calculate estimate", type="primary", use_container_width=True
+    )
+
+
+if calculate:
+    input_frame = pd.DataFrame([user_values], columns=x.columns)
+    predicted_value = float(model.predict(input_frame)[0])
+    predicted_dollars = predicted_value * 100_000
+    st.markdown(
+        f"""
+        <div class="prediction">
+          <small>Estimated median home value</small>
+          <strong>${predicted_dollars:,.0f}</strong>
+          <span class="fine-print">
+            Model output: {predicted_value:.3f} in units of $100,000.
+          </span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+else:
+    st.info("Set the neighborhood profile and select **Calculate estimate**.")
+
+
+st.subheader("Model performance")
+metric_columns = st.columns(4)
+metric_columns[0].metric("Test R²", f"{metrics['r2']:.3f}")
+metric_columns[1].metric("Test RMSE", f"${metrics['rmse'] * 100_000:,.0f}")
+metric_columns[2].metric("Test MSE", f"{metrics['mse']:.3f}")
+metric_columns[3].metric("Training rows", f"{len(x_train):,}")
+st.caption(
+    f"The model was {model_source}. The evaluation uses {len(x_test):,} held-out rows."
+)
+
+
+performance_tab, coefficients_tab, data_tab = st.tabs(
+    ["Actual vs. predicted", "Model coefficients", "Dataset explorer"]
+)
+
+with performance_tab:
+    figure, axis = plt.subplots(figsize=(9, 5.5))
+    axis.scatter(y_test, y_pred, alpha=0.28, color="#28614f", edgecolors="none")
+    comparison_min = min(float(y_test.min()), float(y_pred.min()))
+    comparison_max = max(float(y_test.max()), float(y_pred.max()))
+    axis.plot(
+        [comparison_min, comparison_max],
+        [comparison_min, comparison_max],
+        linestyle="--",
+        linewidth=2,
+        color="#c97845",
+        label="Perfect prediction",
+    )
+    axis.set_title("Actual versus predicted median home values")
+    axis.set_xlabel("Actual value ($100,000s)")
+    axis.set_ylabel("Predicted value ($100,000s)")
+    axis.legend(frameon=False)
+    axis.grid(alpha=0.18)
+    figure.tight_layout()
+    st.pyplot(figure, use_container_width=True)
+    plt.close(figure)
+
+with coefficients_tab:
+    coefficient_data = pd.DataFrame(
+        {
+            "Feature": x.columns,
+            "Label": [FEATURE_LABELS[feature] for feature in x.columns],
+            "Coefficient": model.coef_,
+        }
+    )
+    coefficient_data["Absolute effect"] = coefficient_data["Coefficient"].abs()
+    coefficient_data = coefficient_data.sort_values(
+        "Absolute effect", ascending=False
+    ).drop(columns="Absolute effect")
+    st.dataframe(
+        coefficient_data,
+        use_container_width=True,
+        hide_index=True,
+        column_config={"Coefficient": st.column_config.NumberColumn(format="%.4f")},
+    )
+    st.caption(
+        "Coefficients show the linear change in the target for a one-unit change "
+        "in each feature, with the other features held constant."
+    )
+
+with data_tab:
+    st.dataframe(data, use_container_width=True, hide_index=True, height=430)
+    st.download_button(
+        "Download dataset as CSV",
+        data=data.to_csv(index=False).encode("utf-8"),
+        file_name="california_housing.csv",
+        mime="text/csv",
+    )
