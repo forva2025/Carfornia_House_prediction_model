@@ -9,6 +9,14 @@ An interactive machine-learning application that estimates the **median home val
 
 > This project does not predict the exact sale price of an individual property. The dataset is based on 1990 census information and the application is intended for education and demonstration.
 
+## Live demo
+
+[Open the California Home Value Studio and test the model in real time](https://drgtmgs8xvze7upt9pikqx.streamlit.app/)
+
+Use the neighborhood profile controls in the sidebar to enter all eight feature values, then select **Calculate estimate** to generate a predicted median home value.
+
+[![California Home Value Studio live application](docs/app-screenshot.png)](https://drgtmgs8xvze7upt9pikqx.streamlit.app/)
+
 ## Features
 
 - Interactive controls for all eight model inputs
