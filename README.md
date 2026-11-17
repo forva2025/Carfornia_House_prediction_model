@@ -1,5 +1,4 @@
-# Carfornia_House_prediction_model
-# California Home Value Studio
+# Carlifornia_House_prediction_model
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.39+-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
@@ -40,7 +39,7 @@ An interactive machine-learning application that estimates the **median home val
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/forva2025/Carfornia_House_Prediction_model.git
 cd YOUR_REPOSITORY
 ```
 
