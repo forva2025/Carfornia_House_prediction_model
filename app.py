@@ -56,8 +56,17 @@ st.markdown(
       [data-testid="stSidebar"] h3,
       [data-testid="stSidebar"] p,
       [data-testid="stSidebar"] label,
+      [data-testid="stSidebar"] [data-testid="stWidgetLabel"] *,
       [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
         color: #f8faf7 !important;
+      }
+      [data-testid="stSidebar"] [data-testid="stCaptionContainer"] * {
+        color: #dce8e2 !important;
+      }
+      [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button,
+      [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button * {
+        color: #ffffff !important;
+        fill: #ffffff !important;
       }
       [data-testid="stSidebar"] [data-baseweb="input"] {
         background: #ffffff;
@@ -85,6 +94,18 @@ st.markdown(
       [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] * {
         color: #ffffff !important;
       }
+      [data-testid="stMain"] [data-testid="stBaseButton-primary"],
+      [data-testid="stMain"] [data-testid="stBaseButton-secondary"] {
+        background: #23483d;
+        border: 1px solid #386b5b;
+        color: #ffffff !important;
+        font-weight: 650;
+      }
+      [data-testid="stMain"] [data-testid="stBaseButton-primary"] *,
+      [data-testid="stMain"] [data-testid="stBaseButton-secondary"] * {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+      }
       [data-testid="stMetric"] {
         background: white; border: 1px solid #dfe5dc; border-radius: 14px;
         padding: 16px 18px; box-shadow: 0 8px 24px rgba(28, 52, 43, .06);
@@ -100,6 +121,11 @@ st.markdown(
         color: #102b23 !important;
         font-weight: 700;
       }
+      [data-baseweb="tooltip"] {
+        background: #17352d !important;
+        color: #ffffff !important;
+      }
+      [data-baseweb="tooltip"] * { color: #ffffff !important; }
       .hero {
         padding: 28px 32px; border-radius: 22px; color: #f8f4e8;
         background: linear-gradient(125deg, #17352d 0%, #28614f 62%, #8f4527 160%);
