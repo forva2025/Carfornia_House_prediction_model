@@ -35,28 +35,87 @@ FEATURE_LABELS = {
 st.markdown(
     """
     <style>
-      .stApp { background: #f7f8f3; }
-      [data-testid="stSidebar"] { background: #17352d; }
-      [data-testid="stSidebar"] * { color: #f7f5ed; }
+      .stApp {
+        background: #f7f8f3;
+        color: #17352d;
+      }
+      [data-testid="stMain"] h1,
+      [data-testid="stMain"] h2,
+      [data-testid="stMain"] h3,
+      [data-testid="stMain"] p,
+      [data-testid="stMain"] label,
+      [data-testid="stMain"] [data-testid="stCaptionContainer"] {
+        color: #17352d;
+      }
+      [data-testid="stSidebar"] {
+        background: #17352d;
+        color: #f8faf7;
+      }
+      [data-testid="stSidebar"] h1,
+      [data-testid="stSidebar"] h2,
+      [data-testid="stSidebar"] h3,
+      [data-testid="stSidebar"] p,
+      [data-testid="stSidebar"] label,
+      [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+        color: #f8faf7 !important;
+      }
+      [data-testid="stSidebar"] [data-baseweb="input"] {
+        background: #ffffff;
+        border-color: #c7d4ce;
+      }
+      [data-testid="stSidebar"] input {
+        color: #102b23 !important;
+        -webkit-text-fill-color: #102b23 !important;
+        caret-color: #102b23;
+      }
+      [data-testid="stSidebar"] [data-testid="stNumberInput"] button {
+        background: #e5ece8;
+        color: #102b23 !important;
+      }
+      [data-testid="stSidebar"] [data-testid="stNumberInput"] button svg {
+        fill: #102b23 !important;
+        color: #102b23 !important;
+      }
+      [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
+        background: #a84a1f;
+        border: 1px solid #d88a63;
+        color: #ffffff !important;
+        font-weight: 700;
+      }
+      [data-testid="stSidebar"] [data-testid="stBaseButton-primary"] * {
+        color: #ffffff !important;
+      }
       [data-testid="stMetric"] {
         background: white; border: 1px solid #dfe5dc; border-radius: 14px;
         padding: 16px 18px; box-shadow: 0 8px 24px rgba(28, 52, 43, .06);
       }
+      [data-testid="stMetric"] * { color: #17352d !important; }
+      [data-testid="stAlert"] {
+        background: #e7f0eb;
+        border-color: #9cb8aa;
+      }
+      [data-testid="stAlert"] * { color: #17352d !important; }
+      [data-baseweb="tab-list"] button { color: #294b40 !important; }
+      [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #102b23 !important;
+        font-weight: 700;
+      }
       .hero {
         padding: 28px 32px; border-radius: 22px; color: #f8f4e8;
-        background: linear-gradient(125deg, #17352d 0%, #28614f 62%, #c97845 160%);
+        background: linear-gradient(125deg, #17352d 0%, #28614f 62%, #8f4527 160%);
         margin-bottom: 22px; box-shadow: 0 16px 38px rgba(23, 53, 45, .18);
       }
-      .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .76rem; opacity: .78; }
+      .hero, .hero * { color: #fffdf5 !important; }
+      .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .76rem; opacity: .9; }
       .hero h1 { margin: .3rem 0 .35rem; font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1.04; }
-      .hero p { margin: 0; max-width: 740px; font-size: 1.03rem; opacity: .86; }
+      .hero p { margin: 0; max-width: 740px; font-size: 1.03rem; opacity: .94; }
       .prediction {
         background: #fff; border-left: 6px solid #c97845; border-radius: 16px;
         padding: 22px 24px; margin: 12px 0 20px; box-shadow: 0 8px 24px rgba(28, 52, 43, .07);
       }
       .prediction small { color: #5e6b65; text-transform: uppercase; letter-spacing: .1em; }
       .prediction strong { display: block; color: #17352d; font-size: 2.25rem; margin-top: 3px; }
-      .fine-print { color: #64716b; font-size: .86rem; }
+      .prediction span, .fine-print { color: #465a52 !important; font-size: .86rem; }
     </style>
     """,
     unsafe_allow_html=True,
